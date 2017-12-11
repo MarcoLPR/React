@@ -11,9 +11,16 @@ class App extends Component {
   };
   addNewTask = (taskInfo) => {
     this.setState(prevState => ({
-      tasks: prevState.tasks.concat({taskName: taskInfo, taskId: (this.state.count+1)})
+      tasks: prevState.tasks.concat({taskName: taskInfo, taskId: (this.state.count+1)}),
+      count: prevState.count + 1
     }));
-  };
+  }
+  deleteTask = (taskId) => {
+      for(var i=0; i<(this.state.tasks.length); i++)
+          if(this.state.tasks[i].taskId === taskId){
+              this.setState(this.state.tasks.splice(i, 1))
+          }
+      };
   render() {
     return (
       <div className="App">
@@ -22,7 +29,7 @@ class App extends Component {
           <h1 className="App-title">Welcome to React</h1>
         </header>
         <Form onSubmit={this.addNewTask}/>
-        <ToDoList tasks={this.state.tasks} />
+        <ToDoList tasks={this.state.tasks} onSubmit={this.deleteTask}/>
       </div>
     );
   }

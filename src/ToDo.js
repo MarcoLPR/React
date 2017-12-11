@@ -1,30 +1,25 @@
-import React, { Component } from 'react';
+import React from 'react';
 import './App.css';
-import App from './App.js'
 
-class ToDo extends Component {
-deleteTask = (taskId) => {
-    for(var i=0; i<App.tasks.length; i++)
-        if(App.tasks[i].taskId === taskId){
-            App.tasks.splice(i, 1)
-        }
-    }
-    render() {
-        return null
-    }
-};
 const ToDoList = (props) => {
     return (
       <div className="ToDoList">
-        {props.tasks.map(task => <Task taskName = {task.taskName} taskId = {task.taskId} />)}
+        {props.tasks.map(task => <Task taskName = {task.taskName} taskId = {task.taskId} onSubmit = {props.onSubmit}/>)}
       </div>
     );
   }
 const Task = (props) => {
+    this.handleSubmit = (event) => {
+        event.preventDefault();
+        props.onSubmit(props.taskId);
+    }
         return (
             <div className="Task">
-                <div>{props.taskName}</div>
-                <button onClick={this.deleteTask}>X</button>
+                <form onSubmit={this.handleSubmit}>
+                    <div>{props.taskId}</div>
+                    <div>{props.taskName}</div>
+                    <button type="submit">X</button>
+                </form>
             </div>
         );
     }
