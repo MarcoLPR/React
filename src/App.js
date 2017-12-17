@@ -4,56 +4,136 @@ import React, { Component } from 'react';
 import Grid from 'material-ui/Grid';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
+import Snackbar from 'material-ui/Snackbar';
 //Components
 import ToDoList from './ToDo.js';
-import Form from './Form.js';
+import ToDoBar from './ToDoBar.js';
 //Style
-import logo from './logo.svg';
 import './App.css';
 
 const styles = theme => ({
   app: {
     margin: 20,
   },
+  snackBar: {
+    textAlign: 'center',
+  },
 });
 
 class App extends Component {
   state = {
     tasks: [],
+    completedTasks: [],
     taskCount: 0,
-    completeTaskCount: 0
+    completeTaskCount: 0,
+    openSnackBar: false,
+    snackBarMessage: '',
+  };
+  handleRequestCloseSnack = () => {
+    this.setState({
+      openSnackBar: false,
+    });
   };
   addNewTask = (taskName, taskDate) => {
     this.setState(prevState => ({
-      tasks: prevState.tasks.concat({ taskName: taskName, taskDate: taskDate, taskId: (this.state.taskCount + 1) }),
-      taskCount: prevState.taskCount + 1
+      tasks: prevState.tasks.concat(
+        {
+          taskName: taskName,
+          taskDate: taskDate,
+          favorite: false,
+          taskId: (this.state.taskCount + 1)
+        }),
+      taskCount: prevState.taskCount + 1,
+      snackBarMessage: 'Task added',
+      openSnackBar: true,
     }));
+    debugger;
   }
-  deleteTask = (taskId, statusCode) => {
-    for (var i = 0; i < (this.state.tasks.length); i++)
-      if (this.state.tasks[i].taskId === taskId) {
-        this.setState(this.state.tasks.splice(i, 1))
-        if (statusCode === 200) {
+  actionTask = (taskId, statusCode) => {
+    var n, i
+    switch (statusCode) {
+      case 100:
+        for (i = 0; i < (this.state.tasks.length); i++) {
+          if (this.state.tasks[i].taskId === taskId) {
+            if (this.state.tasks[i].favorite === true) {
+              this.setState(tasks => ({
+                favorite: false,
+              }))
+            }
+            else {
+              this.setState(prevState => ({
+                favorite: true,
+              }))
+            }
+          }
+        }
+        break;
+      case 200:
+        for (i = 0; i < (this.state.tasks.length); i++) {
+          if (this.state.tasks[i].taskId === taskId) {
+            this.setState(this.state.tasks.splice(i, 1))
+            this.setState(prevState => ({
+              completeTaskCount: prevState.completeTaskCount + 1,
+              snackBarMessage: 'Task completed',
+              openSnackBar: true,
+            }))
+          }
+        }
+        break;
+      case 300:
+        for (i = 0; i < (this.state.tasks.length); i++) {
+          if (this.state.tasks[i].taskId === taskId) {
+            n = i
+          }
+        }
+        if (this.state.tasks[n].favorite === true) {
           this.setState(prevState => ({
-            completeTaskCount: prevState.completeTaskCount + 1
+            tasks: prevState.tasks[n].favorite = false
           }))
         }
-      }
-  };
+        else {
+          this.setState(prevState => ({
+            tasks: prevState.tasks[n].favorite = true
+          }))
+        }
+        break;
+      case 400:
+        for (i = 0; i < (this.state.tasks.length); i++) {
+          if (this.state.tasks[i].taskId === taskId) {
+            this.setState(this.state.tasks.splice(i, 1))
+            this.setState(prevState => ({
+              snackBarMessage: 'Task deleted',
+              openSnackBar: true,
+            }))
+          }
+        };
+        break;
+      default:
+        break;
+    }
+  }
   render() {
     const { classes } = this.props;
     return (
       <div className="App">
+        <ToDoBar onSubmit={this.addNewTask} />
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">To Do</h1>
+          <h1 className="App-title">Tasks</h1>
+          <h2>Tasks completed: {this.state.completeTaskCount}</h2>
         </header>
         <div className={classes.app}>
           <Grid container>
-            <Form onSubmit={this.addNewTask} />
-            <ToDoList tasks={this.state.tasks} completeTaskCount={this.state.completeTaskCount} onClick={this.deleteTask} />
+            <ToDoList tasks={this.state.tasks} onClick={this.actionTask} />
           </Grid>
         </div>
+        <Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          open={this.state.openSnackBar}
+          message={this.state.snackBarMessage}
+          autoHideDuration={4000}
+          onRequestClose={this.handleRequestCloseSnack}
+          className={classes.snackBar}
+        />
       </div>
     );
   }

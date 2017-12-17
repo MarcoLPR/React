@@ -20,14 +20,13 @@ const ToDoList = (props) => {
     const { classes } = props;
     return (
         <div className={classes.container}>
-            <h2>My Tasks</h2>
-            <h3>Tasks completed: {props.completeTaskCount}</h3>
             <Grid container direction={'row'} alignItems={'flex-start'} justify={'flex-start'} spacing={24}>
                 {props.tasks.map(task =>
                     <Task
                         taskName={task.taskName}
                         taskId={task.taskId}
                         taskDate={task.taskDate}
+                        favorite={task.favorite}
                         onClick={props.onClick}
                     />)}
             </Grid>
