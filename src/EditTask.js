@@ -20,7 +20,6 @@ class EditTask extends Component {
     handleEdit = event => {
         event.preventDefault();
         this.props.onSubmit(this.state.taskName, this.state.taskDate);
-        this.setState({ taskName: '', taskDate: '', })
         this.props.onClick();
     };
     render() {
