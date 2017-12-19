@@ -49,8 +49,8 @@ class App extends Component {
     }));
     debugger;
   }
-  actionTask = (taskId, statusCode) => {
-    var n, i
+  actionTask = (taskId, statusCode, taskName, taskDate) => {
+    var i
     switch (statusCode) {
       case 100:
         for (i = 0; i < (this.state.tasks.length); i++) {
@@ -83,18 +83,19 @@ class App extends Component {
       case 300:
         for (i = 0; i < (this.state.tasks.length); i++) {
           if (this.state.tasks[i].taskId === taskId) {
-            n = i
+            this.setState(this.state.tasks.splice(i, 1))
+            this.setState(prevState => ({
+              snackBarMessage: 'Task modified',
+              openSnackBar: true,
+              tasks: prevState.tasks.concat(
+                {
+                  taskName: taskName,
+                  taskDate: taskDate,
+                  favorite: false,
+                  taskId: taskId
+                }),
+            }))
           }
-        }
-        if (this.state.tasks[n].favorite === true) {
-          this.setState(prevState => ({
-            tasks: prevState.tasks[n].favorite = false
-          }))
-        }
-        else {
-          this.setState(prevState => ({
-            tasks: prevState.tasks[n].favorite = true
-          }))
         }
         break;
       case 400:

@@ -1,5 +1,5 @@
 //React
-import React from 'react';
+import React, { Component } from 'react';
 //Material-UI
 import Button from "material-ui/Button";
 import Card, { CardActions, CardContent } from 'material-ui/Card';
@@ -14,6 +14,7 @@ import FavoriteBorderIcon from 'material-ui-icons/FavoriteBorder';
 import { red, indigo, grey, purple } from 'material-ui/colors';
 //Style
 import './App.css';
+import EditTask from './EditTask.js';
 
 const danger = red[500]
 const primary = indigo[900]
@@ -50,49 +51,71 @@ const styles = theme => ({
 });
 
 
-const Task = (props) => {
-    const { classes } = props;
-    this.handleClickFavorite = (event) => {
+class Task extends Component {
+    state = {
+        openDialog: false,
+        anchorOrigin: {
+            horizontal: 'left',
+            vertical: 'bottom',
+        },
+        targetOrigin: {
+            horizontal: 'left',
+            vertical: 'top',
+        },
+    };
+    handleClickFavorite = (event) => {
         event.preventDefault();
-        props.onClick(props.taskId, 100);
+        this.props.onClick(this.props.taskId, 100);
     }
-    this.handleClickDone = (event) => {
+    handleClickDone = (event) => {
         event.preventDefault();
-        props.onClick(props.taskId, 200);
+        this.props.onClick(this.props.taskId, 200);
     }
-    this.handleClickEdit = (event) => {
+    handleClickEditTask = (taskDate, taskName) => {
+        this.props.onClick(this.props.taskId, 300, taskDate, taskName);
+    }
+    handleClickDelete = (event) => {
         event.preventDefault();
-        props.onClick(props.taskId, 300);
+        this.props.onClick(this.props.taskId, 400);
     }
-    this.handleClickDelete = (event) => {
-        event.preventDefault();
-        props.onClick(props.taskId, 400);
+    handleClickOpenDialog = () => {
+        this.setState({ openDialog: true });
+    };
+    handleClickCloseDialog = () => {
+        this.setState({ openDialog: false });
+    };
+    render() {
+        const { classes } = this.props;
+        return (
+            <Grid item xs={3}>
+                <Card className={classes.card}>
+                    <CardContent>
+                        <div className={classes.date}>{this.props.taskDate}</div>
+                        <div className={classes.task}>{this.props.taskName}</div>
+                        <CardActions>
+                            <Button fab mini aria-label="done" className={classes.done} type="button" onClick={this.handleClickDone}>
+                                <DoneIcon />
+                            </Button>
+                            <Button fab mini aria-label="edit" className={classes.edit} type="button" onClick={this.handleClickOpenDialog}>
+                                <CreateIcon />
+                            </Button>
+                            <Button fab mini aria-label="favorite" className={classes.favorite} type="button" onClick={this.handleClickFavorite}>
+                                <FavoriteBorderIcon />
+                            </Button>
+                            <Button fab mini aria-label="delete" className={classes.delete} type="button" onClick={this.handleClickDelete}>
+                                <DeleteIcon />
+                            </Button>
+                        </CardActions>
+                    </CardContent>
+                </Card>
+                <EditTask open={this.state.openDialog}
+                    onClick={this.handleClickCloseDialog}
+                    onSubmit={this.handleClickEditTask}
+                    taskName={this.props.taskName}
+                    taskDate={this.props.taskDate} />
+            </Grid>
+        );
     }
-
-    return (
-        <Grid item xs={3}>
-            <Card className={classes.card}>
-                <CardContent>
-                    <div className={classes.date}>{props.taskDate}</div>
-                    <div className={classes.task}>{props.taskName}</div>
-                    <CardActions>
-                        <Button fab mini aria-label="done" className={classes.done} type="button" onClick={this.handleClickDone}>
-                            <DoneIcon />
-                        </Button>
-                        <Button fab mini aria-label="edit" className={classes.edit} type="button" onClick={this.handleClickEdit}>
-                            <CreateIcon />
-                        </Button>
-                        <Button fab mini aria-label="favorite" className={classes.favorite} type="button" onClick={this.handleClickFavorite}>
-                            <FavoriteBorderIcon />
-                        </Button>
-                        <Button fab mini aria-label="delete" className={classes.delete} type="button" onClick={this.handleClickDelete}>
-                            <DeleteIcon />
-                        </Button>
-                    </CardActions>
-                </CardContent>
-            </Card>
-        </Grid>
-    );
 }
 Task.propTypes = {
     classes: PropTypes.object.isRequired,
