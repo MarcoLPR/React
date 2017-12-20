@@ -8,20 +8,27 @@ import Dialog, {
     DialogContent,
     DialogTitle,
 } from 'material-ui/Dialog';
+import Typography from 'material-ui/Typography/Typography';
 
-class AddTask extends Component {
+class EditTask extends Component {
     state = {
-        taskName: '',
-        taskDate: '',
+        taskName: this.props.taskName,
+        taskDate: this.props.taskDate,
+        warning: false,
     }
     handleClose = () => {
         this.props.onClick();
+        this.setState({warning: false})
     };
-    handleAdd = event => {
+    handleEdit = event => {
         event.preventDefault();
+        if(this.state.taskName === '' || this.state.taskDate === ''){
+            this.setState({ warning: true });
+        }else{
         this.props.onSubmit(this.state.taskName, this.state.taskDate);
-        this.setState({ taskName: '', taskDate: '', })
         this.props.onClick();
+        this.setState({warning: false})
+        }
     };
     render() {
         return (
@@ -57,18 +64,20 @@ class AddTask extends Component {
                             type="date"
                             fullWidth
                         />
+                        { this.state.warning ? <Typography color="primary">All fields should have a value</Typography> : null }
+                        
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={this.handleClose} color="primary">
                             Cancel
-              </Button>
-                        <Button onClick={this.handleAdd} color="primary">
-                            Add
-              </Button>
+                        </Button>
+                        <Button onClick={this.handleEdit} color="primary">
+                            Edit
+                        </Button>
                     </DialogActions>
                 </Dialog>
             </div>
         );
     }
 }
-export default AddTask;
+export default EditTask;

@@ -14,7 +14,7 @@ import FavoriteBorderIcon from 'material-ui-icons/FavoriteBorder';
 import { red, indigo, grey, purple } from 'material-ui/colors';
 //Style
 import './App.css';
-import EditTask from './EditTask.js';
+import EditTask from './EditTaskDialog.js';
 
 const danger = red[500]
 const primary = indigo[900]
@@ -65,14 +65,18 @@ class Task extends Component {
     };
     handleClickFavorite = (event) => {
         event.preventDefault();
-        this.props.onClick(this.props.taskId, 100);
+        this.props.onClick(this.props.taskId, 100, this.props.taskName, this.props.taskDate, true);
+    }
+    handleClickUnfavorite = (event) => {
+        event.preventDefault();
+        this.props.onClick(this.props.taskId, 100, this.props.taskName, this.props.taskDate, false);
     }
     handleClickDone = (event) => {
         event.preventDefault();
-        this.props.onClick(this.props.taskId, 200);
+        this.props.onClick(this.props.taskId, 200, this.props.taskName, this.props.taskDate);
     }
     handleClickEditTask = (taskDate, taskName) => {
-        this.props.onClick(this.props.taskId, 300, taskDate, taskName);
+        this.props.onClick(this.props.taskId, 300, taskDate, taskName, this.props.favorite);
     }
     handleClickDelete = (event) => {
         event.preventDefault();
@@ -99,9 +103,16 @@ class Task extends Component {
                             <Button fab mini aria-label="edit" className={classes.edit} type="button" onClick={this.handleClickOpenDialog}>
                                 <CreateIcon />
                             </Button>
-                            <Button fab mini aria-label="favorite" className={classes.favorite} type="button" onClick={this.handleClickFavorite}>
-                                <FavoriteBorderIcon />
-                            </Button>
+                            {this.props.favorite ?
+                                <Button fab mini aria-label="Unfavorite" className={classes.favorite} type="button" onClick={this.handleClickUnfavorite}>
+                                    <FavoriteIcon />
+                                </Button>
+                                : null}
+                            {!this.props.favorite ?
+                                <Button fab mini aria-label="favorite" className={classes.favorite} type="button" onClick={this.handleClickFavorite}>
+                                    <FavoriteBorderIcon />
+                                </Button>
+                                : null}
                             <Button fab mini aria-label="delete" className={classes.delete} type="button" onClick={this.handleClickDelete}>
                                 <DeleteIcon />
                             </Button>

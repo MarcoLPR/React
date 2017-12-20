@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 //Material-UI
 import Button from 'material-ui/Button';
+import Typography from 'material-ui/Typography';
 import TextField from 'material-ui/TextField';
 import Dialog, {
     DialogActions,
@@ -9,18 +10,24 @@ import Dialog, {
     DialogTitle,
 } from 'material-ui/Dialog';
 
-class EditTask extends Component {
+class AddTask extends Component {
     state = {
-        taskName: this.props.taskName,
-        taskDate: this.props.taskDate,
+        taskName: '',
+        taskDate: '',
+        warning: false,
     }
     handleClose = () => {
         this.props.onClick();
     };
-    handleEdit = event => {
+    handleAdd = event => {
         event.preventDefault();
+        if(this.state.taskName === '' || this.state.taskDate === ''){
+            this.setState({ warning: true });
+        }else{
         this.props.onSubmit(this.state.taskName, this.state.taskDate);
+        this.setState({ taskName: '', taskDate: '', })
         this.props.onClick();
+        }
     };
     render() {
         return (
@@ -56,18 +63,19 @@ class EditTask extends Component {
                             type="date"
                             fullWidth
                         />
+                        { this.state.warning ? <Typography color="primary">All fields should have a value</Typography> : null }
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={this.handleClose} color="primary">
                             Cancel
                         </Button>
-                        <Button onClick={this.handleEdit} color="primary">
-                            Edit
-                        </Button>
+                        <Button onClick={this.handleAdd} color="primary">
+                            Add
+                    </Button>
                     </DialogActions>
                 </Dialog>
             </div>
         );
     }
 }
-export default EditTask;
+export default AddTask;
