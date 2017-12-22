@@ -6,8 +6,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 //Components
 import Task from './Task.js';
-//Style
-import './App.css';
+import CompletedTask from './CompletedTask';
 
 const styles = theme => ({
     container: {
@@ -20,6 +19,7 @@ const ToDoList = (props) => {
     const { classes } = props;
     return (
         <div className={classes.container}>
+        { props.normalTask ?
             <Grid container direction={'row'} alignItems={'flex-start'} justify={'flex-start'} spacing={24}>
                 {props.tasks.map(task =>
                     <Task
@@ -30,6 +30,17 @@ const ToDoList = (props) => {
                         onClick={props.onClick}
                     />)}
             </Grid>
+            : null}
+        { props.completedTask ?
+            <Grid container direction={'row'} alignItems={'flex-start'} justify={'flex-start'} spacing={24}>
+                {props.tasks.map(task =>
+                    <CompletedTask
+                        taskName={task.taskName}
+                        taskId={task.taskId}
+                        taskDate={task.taskDate}
+                    />)}
+            </Grid>
+            : null}
         </div>
     );
 }

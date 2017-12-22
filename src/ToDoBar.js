@@ -11,13 +11,11 @@ import CreateIcon from 'material-ui-icons/Create'
 import MenuIcon from 'material-ui-icons/Menu';
 import DoneIcon from 'material-ui-icons/Done';
 import FavoriteIcon from 'material-ui-icons/Favorite';
-import { teal } from 'material-ui/colors';
 import Drawer from 'material-ui/Drawer';
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 import ChevronLeftIcon from 'material-ui-icons/ChevronLeft';
 
-const primary = teal[900];
 const styles = {
     root: {
         width: '100%',
@@ -33,11 +31,9 @@ const styles = {
         marginLeft: -12,
         marginRight: 20,
     },
-    appBar: {
-        background: primary
-    },
-    actions: {
-        color: 'white'
+    closeButton: {
+        top: 5,
+        left: 25
     }
 };
 
@@ -46,27 +42,20 @@ class ToDoBar extends Component {
         openDrawer: false,
         title: 'Things To Do',
     };
-    /*handleClickAddTask = (taskName, taskDate) => {
-        this.props.onSubmit(taskName, taskDate)
-    };*/
     toggleDrawer = (open) => () => {
-        this.setState({openDrawer: open});
-        debugger;
+        this.setState({ openDrawer: open });
     };
     changeView = (view, statusCode) => () => {
-        this.setState({title: view, openDrawer: false});
+        this.setState({ title: view, openDrawer: false });
         this.props.onSubmit(statusCode)
     };
     render() {
         const { classes } = this.props;
         return (
             <div className={classes.root}>
-                <AppBar position="static" className={classes.appBar}>
+                <AppBar position="static" color='primary'>
                     <Toolbar>
-                        <IconButton
-                            className={classes.menuButton}
-                            color="contrast" aria-label="Menu"
-                            onClick={this.toggleDrawer(true)}>
+                        <IconButton className={classes.menuButton} color="contrast" aria-label="Menu" onClick={this.toggleDrawer(true)}>
                             <MenuIcon />
                         </IconButton>
                         <Typography type="title" color="inherit" className={classes.flex}>
@@ -75,31 +64,35 @@ class ToDoBar extends Component {
                     </Toolbar>
                 </AppBar>
                 <Drawer open={this.state.openDrawer} onClose={this.toggleDrawer(false)}>
-                    <IconButton onClick={this.toggleDrawer(false)}>
+                    <IconButton className={classes.closeButton} onClick={this.toggleDrawer(false)}>
                         <ChevronLeftIcon />
+                        <Typography>CLOSE</Typography>
                     </IconButton>
                     <div className={classes.list}>
                         <List>
+                            <Divider />
                             <ListItem button onClick={this.changeView('Things To Do', 100)}>
                                 <ListItemText primary="Things to do" />
                                 <ListItemIcon>
                                     <CreateIcon />
                                 </ListItemIcon>
                             </ListItem>
+                            <Divider />
                             <ListItem button onClick={this.changeView('Completed Tasks', 200)}>
                                 <ListItemText primary="Completed Tasks" />
                                 <ListItemIcon>
                                     <DoneIcon />
                                 </ListItemIcon>
                             </ListItem>
+                            <Divider />
                             <ListItem button onClick={this.changeView('Favorite', 300)}>
                                 <ListItemText primary="Favorite" />
                                 <ListItemIcon>
                                     <FavoriteIcon />
                                 </ListItemIcon>
                             </ListItem>
+                            <Divider />
                         </List>
-                        <Divider />
                     </div>
                 </Drawer>
             </div>

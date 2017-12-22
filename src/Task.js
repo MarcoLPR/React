@@ -6,48 +6,47 @@ import Card, { CardActions, CardContent } from 'material-ui/Card';
 import Grid from 'material-ui/Grid';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
+import IconButton from 'material-ui/IconButton';
 import DeleteIcon from 'material-ui-icons/Delete';
 import DoneIcon from 'material-ui-icons/Done';
 import CreateIcon from 'material-ui-icons/Create';
 import FavoriteIcon from 'material-ui-icons/Favorite';
 import FavoriteBorderIcon from 'material-ui-icons/FavoriteBorder';
-import { red, indigo, grey, purple } from 'material-ui/colors';
+import { red } from 'material-ui/colors';
 //Style
 import './App.css';
 import EditTask from './EditTaskDialog.js';
+import Typography from 'material-ui/Typography/Typography';
 
 const danger = red[500]
-const primary = indigo[900]
-const normal = grey[900]
-const edit = purple[500]
 const styles = theme => ({
     card: {
         padding: 16,
         textAlign: 'center',
         color: 'white',
         background: '#222',
-        borderRadius: '10%'
     },
     date: {
         textAlign: 'right',
-        padding: 0,
-        fontSize: 14
+        fontSize: 14,
+        color:'white',
+        marginTop: -50,
     },
     task: {
-        fontSize: 20
+        fontSize: 20,
+        color:'white',
+        marginTop: 10,
     },
     favorite: {
         color: danger,
+        background: 'transparent',
+        fontSize: 30,
+        right: 100,
+        bottom: 20,
     },
-    edit: {
-        color: edit
+    actionMenu: {
+        marginBottom: '-45px',
     },
-    done: {
-        color: primary
-    },
-    delete: {
-        color: normal
-    }
 });
 
 
@@ -94,28 +93,30 @@ class Task extends Component {
             <Grid item xs={3}>
                 <Card className={classes.card}>
                     <CardContent>
-                        <div className={classes.date}>{this.props.taskDate}</div>
-                        <div className={classes.task}>{this.props.taskName}</div>
-                        <CardActions>
-                            <Button fab mini aria-label="done" className={classes.done} type="button" onClick={this.handleClickDone}>
+                        {this.props.favorite ?
+                            <IconButton aria-label="Unfavorite" className={classes.favorite} type="button" onClick={this.handleClickUnfavorite}>
+                                <FavoriteIcon />
+                            </IconButton>
+                            : null}
+                        {!this.props.favorite ?
+                            <IconButton aria-label="favorite" className={classes.favorite} type="button" onClick={this.handleClickFavorite}>
+                                <FavoriteBorderIcon />
+                            </IconButton>
+                            : null}
+                        <Typography className={classes.date}>{this.props.taskDate}</Typography>
+                        <Typography className={classes.task}>{this.props.taskName}</Typography>
+                        <CardActions className={classes.actionMenu} spacing={24}>
+                            <Button aria-label="done" color='primary' type="button" onClick={this.handleClickDone}>
+                                <Typography>DONE</Typography>
                                 <DoneIcon />
                             </Button>
-                            <Button fab mini aria-label="edit" className={classes.edit} type="button" onClick={this.handleClickOpenDialog}>
+                            <Button aria-label="edit" color='primary' type="button" onClick={this.handleClickOpenDialog}>
+                                <Typography>EDIT</Typography>
                                 <CreateIcon />
                             </Button>
-                            {this.props.favorite ?
-                                <Button fab mini aria-label="Unfavorite" className={classes.favorite} type="button" onClick={this.handleClickUnfavorite}>
-                                    <FavoriteIcon />
-                                </Button>
-                                : null}
-                            {!this.props.favorite ?
-                                <Button fab mini aria-label="favorite" className={classes.favorite} type="button" onClick={this.handleClickFavorite}>
-                                    <FavoriteBorderIcon />
-                                </Button>
-                                : null}
-                            <Button fab mini aria-label="delete" className={classes.delete} type="button" onClick={this.handleClickDelete}>
+                            <IconButton aria-label="delete" color='primary' type="button" onClick={this.handleClickDelete}>
                                 <DeleteIcon />
-                            </Button>
+                            </IconButton>
                         </CardActions>
                     </CardContent>
                 </Card>

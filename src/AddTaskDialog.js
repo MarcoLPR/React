@@ -18,6 +18,7 @@ class AddTask extends Component {
     }
     handleClose = () => {
         this.props.onClick();
+        this.setState({ taskName: '', taskDate: '', warning: false })
     };
     handleAdd = event => {
         event.preventDefault();
@@ -25,7 +26,7 @@ class AddTask extends Component {
             this.setState({ warning: true });
         }else{
         this.props.onSubmit(this.state.taskName, this.state.taskDate);
-        this.setState({ taskName: '', taskDate: '', })
+        this.setState({ taskName: '', taskDate: '', warning: false })
         this.props.onClick();
         }
     };

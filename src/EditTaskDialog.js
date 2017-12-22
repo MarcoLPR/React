@@ -16,7 +16,7 @@ class EditTask extends Component {
         taskDate: this.props.taskDate,
         warning: false,
     }
-    handleClose = () => {
+    closeDialog = () => {
         this.props.onClick();
         this.setState({warning: false})
     };
@@ -35,7 +35,7 @@ class EditTask extends Component {
             <div>
                 <Dialog
                     open={this.props.open}
-                    onClose={this.handleClose}
+                    onClose={this.closeDialog}
                     aria-labelledby="form-dialog-title"
                 >
                     <DialogTitle id="form-dialog-title">New Task</DialogTitle>
