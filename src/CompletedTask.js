@@ -1,32 +1,33 @@
 //React
 import React, { Component } from 'react';
 //Material-UI
-import Card, { CardContent } from 'material-ui/Card';
-import Grid from 'material-ui/Grid';
-import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
-import Typography from 'material-ui/Typography/Typography';
+import PropTypes from 'prop-types';
+import {
+    ListItem,
+    ListItemAvatar,
+    ListItemText,
+} from 'material-ui/List';
+import Avatar from 'material-ui/Avatar';
+import Tooltip from 'material-ui/Tooltip';
+import DirectionRunsIcon from 'material-ui-icons/DirectionsRun';
+import LocalAtmIcon from 'material-ui-icons/LocalAtm';
+import LocalDiningIcon from 'material-ui-icons/LocalDining';
+import LocalPhoneIcon from 'material-ui-icons/LocalPhone';
+import SchoolIcon from 'material-ui-icons/School';
 
 const styles = theme => ({
-    card: {
-        padding: 16,
-        textAlign: 'center',
+    root: {
+        backgroundColor: '#424242',
+        color: '#424242',
+        borderRadius: 3,
+        border: 0,
+        boxShadow: '0 0px 5px 0 black',
+    },
+    colorDefault: {
         color: 'white',
-        background: '#222',
-    },
-    date: {
-        textAlign: 'right',
-        fontSize: 14,
-        color:'white',
-        marginTop: 0,
-    },
-    task: {
-        fontSize: 20,
-        color:'white',
-        marginTop: 10,
-    },
+    }
 });
-
 
 class CompletedTask extends Component {
     state = {
@@ -34,14 +35,25 @@ class CompletedTask extends Component {
     render() {
         const { classes } = this.props;
         return (
-            <Grid item xs={3}>
-                <Card className={classes.card}>
-                    <CardContent>
-                        <Typography className={classes.date}>Completed on: {this.props.taskDate}</Typography>
-                        <Typography className={classes.task}>{this.props.taskName}</Typography>
-                    </CardContent>
-                </Card>
-            </Grid>
+            <div>
+                <ListItem className={classes.root}>
+                    <Tooltip id="tooltip-bottom" title={this.props.type} placement="bottom">
+                        <ListItemAvatar color='primary'>
+                            <Avatar className={classes.colorDefault}>
+                                {this.props.type === 'Fitness' ? <DirectionRunsIcon /> : null}
+                                {this.props.type === 'Bills' ? <LocalAtmIcon /> : null}
+                                {this.props.type === 'Food' ? <LocalDiningIcon /> : null}
+                                {this.props.type === 'Call' ? <LocalPhoneIcon /> : null}
+                                {this.props.type === 'Study' ? <SchoolIcon /> : null}
+                            </Avatar>
+                        </ListItemAvatar>
+                    </Tooltip>
+                    <ListItemText
+                        primary={this.props.taskName}
+                        secondary={'Completed on ' + this.props.taskDate}
+                    />
+                </ListItem>
+            </div>
         );
     }
 }

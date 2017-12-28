@@ -1,5 +1,8 @@
 //React
 import React, { Component } from 'react';
+import {
+  BrowserRouter as Router,
+} from 'react-router-dom';
 //Components
 import ToDoApp from './ToDoApp.js';
 import ToDoBar from './ToDoBar.js';
@@ -16,37 +19,17 @@ const theme = createMuiTheme({
 });
 class App extends Component {
   state = {
-    statusCode: 100,
-    viewToDo: true,
-    viewCompleted: false,
-    viewFavorite: false,
   };
-changeView = (statusCode) => {
-  switch (statusCode) {
-    case 100:
-      this.setState({ viewToDo: true, viewCompleted: false, viewFavorite: false });
-      break;
-    case 200:
-      this.setState({ viewToDo: false, viewCompleted: true, viewFavorite: false });
-      break;
-    case 300:
-      this.setState({ viewToDo: false, viewCompleted: false, viewFavorite: true });
-      break;
-    default:
-      break;
-  }
-}
   render() {
     return (
+      <Router>
       <MuiThemeProvider theme={theme}>
         <div className="App">
-          <ToDoBar onSubmit={this.changeView}/>
-          <ToDoApp
-          viewToDo={this.state.viewToDo}
-          viewCompleted={this.state.viewCompleted}
-          viewFavorite={this.state.viewFavorite}/>
+          <ToDoBar/>
+          <ToDoApp/>
         </div>
       </MuiThemeProvider>
+      </Router>
     );
   }
 }

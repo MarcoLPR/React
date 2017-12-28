@@ -1,5 +1,6 @@
 //React
 import React, { Component } from 'react';
+import {Link} from 'react-router-dom';
 //Material-UI
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
@@ -45,10 +46,6 @@ class ToDoBar extends Component {
     toggleDrawer = (open) => () => {
         this.setState({ openDrawer: open });
     };
-    changeView = (view, statusCode) => () => {
-        this.setState({ title: view, openDrawer: false });
-        this.props.onSubmit(statusCode)
-    };
     render() {
         const { classes } = this.props;
         return (
@@ -71,21 +68,27 @@ class ToDoBar extends Component {
                     <div className={classes.list}>
                         <List>
                             <Divider />
-                            <ListItem button onClick={this.changeView('Things To Do', 100)}>
+                            <ListItem button 
+                            component = {Link} to="/"
+                            onClick={(event) => this.setState({ title: 'Things To Do' })}>
                                 <ListItemText primary="Things to do" />
                                 <ListItemIcon>
                                     <CreateIcon />
                                 </ListItemIcon>
                             </ListItem>
                             <Divider />
-                            <ListItem button onClick={this.changeView('Completed Tasks', 200)}>
+                            <ListItem button
+                            component = {Link} to="/completed"
+                            onClick={(event) => this.setState({ title: 'Completed Tasks' })}>
                                 <ListItemText primary="Completed Tasks" />
                                 <ListItemIcon>
                                     <DoneIcon />
                                 </ListItemIcon>
                             </ListItem>
                             <Divider />
-                            <ListItem button onClick={this.changeView('Favorite', 300)}>
+                            <ListItem button
+                            component = {Link} to="/favorite"
+                            onClick={(event) => this.setState({ title: 'Favorite Tasks' })}>
                                 <ListItemText primary="Favorite" />
                                 <ListItemIcon>
                                     <FavoriteIcon />

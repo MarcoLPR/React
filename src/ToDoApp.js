@@ -1,25 +1,32 @@
 //React
 import React, { Component } from 'react';
+import { Route } from 'react-router-dom';
 //Material-UI
 import Grid from 'material-ui/Grid';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import Snackbar from 'material-ui/Snackbar';
-import Button from 'material-ui/Button';
-import AddIcon from 'material-ui-icons/Add'
+import Paper from 'material-ui/Paper';
+import Badge from 'material-ui/Badge';
+import DoneIcon from 'material-ui-icons/Done';
+import FavoriteIcon from 'material-ui-icons/Favorite';
+import CreateIcon from 'material-ui-icons/Create';
+import Tooltip from 'material-ui/Tooltip';
 //Components
-import ToDoList from './ToDoList.js';
+import ToDoTasksList from './ToDoTasksList.js';
+import CompletedTasksList from './CompletedTasksList.js';
+import FavoriteTasksList from './FavoriteTasksList.js';
 import AddTask from './AddTaskDialog.js';
 
 const styles = theme => ({
   app: {
     margin: 20,
   },
-  button: {
-    fontSize: 40,
-    bottom: 80,
-    right: 80,
-    position: 'absolute',
+  badge: {
+    margin: 20,
+  },
+  icon: {
+    marginTop:10,
   }
 });
 
@@ -36,14 +43,15 @@ class ToDoApp extends Component {
     snackBarMessage: '',
   };
 
-  addNewTask = (taskName, taskDate) => {
+  addNewTask = (taskName, taskDate, type) => {
     this.setState(prevState => ({
       tasks: prevState.tasks.concat(
         {
           taskName: taskName,
           taskDate: taskDate,
           favorite: false,
-          taskId: (this.state.taskCount + 1)
+          taskId: (this.state.taskCount + 1),
+          type: type
         }),
       taskCount: prevState.taskCount + 1,
       snackBarMessage: 'Task added',
@@ -51,54 +59,53 @@ class ToDoApp extends Component {
       unfinishedTasks: prevState.unfinishedTasks + 1
     }));
   }
-  actionTask = (taskId, statusCode, taskName, taskDate, favorite) => {
+  actionTask = (taskId, statusCode, taskName, taskDate, favorite, type) => {
     var i, temporal, n
     switch (statusCode) {
-      case 100: //Favorite
-        if (this.props.viewToDo === true) {
-          for (i = 0; i < (this.state.tasks.length); i++) {
-            if (this.state.tasks[i].taskId === taskId) {
-              temporal = this.state.tasks.slice()
-              temporal[i].favorite = favorite
-              this.setState({ tasks: temporal })
-              n = true
-            }
+      case 100: //Favorite From To Do
+        for (i = 0; i < (this.state.tasks.length); i++) {
+          if (this.state.tasks[i].taskId === taskId) {
+            temporal = this.state.tasks.slice()
+            temporal[i].favorite = favorite
+            this.setState({ tasks: temporal })
+            n = true
           }
-          if (n === true && favorite === true) {
-            this.setState(prevState => ({
-              favoriteCount: prevState.favoriteCount + 1,
-              favoriteTasks: prevState.favoriteTasks.concat(
-                {
-                  taskName: taskName,
-                  taskDate: taskDate,
-                  favorite: favorite,
-                  taskId: taskId
-                })
-            }))
-            n = false
-          } else if (favorite === false && n === true) {
-            for (i = 0; i < (this.state.favoriteTasks.length); i++) {
-              if (this.state.favoriteTasks[i].taskId === taskId) {
-                this.setState(this.state.favoriteTasks.splice(i, 1))
-                this.setState(prevState => ({favoriteCount: prevState.favoriteCount - 1}))
-                n = false
-              }
-            }
-          }
-          break;
-        } else {
-          for (i = 0; i < (this.state.tasks.length); i++) {
-            if (this.state.tasks[i].taskId === taskId) {
-              temporal = this.state.tasks.slice()
-              temporal[i].favorite = favorite
-              this.setState({ tasks: temporal })
-            }
-          }
+        }
+        if (n === true && favorite === true) {
+          this.setState(prevState => ({
+            favoriteCount: prevState.favoriteCount + 1,
+            favoriteTasks: prevState.favoriteTasks.concat(
+              {
+                taskName: taskName,
+                taskDate: taskDate,
+                favorite: favorite,
+                taskId: taskId,
+                type: type,
+              })
+          }))
+          n = false
+        } else if (favorite === false && n === true) {
           for (i = 0; i < (this.state.favoriteTasks.length); i++) {
             if (this.state.favoriteTasks[i].taskId === taskId) {
               this.setState(this.state.favoriteTasks.splice(i, 1))
-              this.setState(prevState => ({favoriteCount: prevState.favoriteCount - 1}))
+              this.setState(prevState => ({ favoriteCount: prevState.favoriteCount - 1 }))
+              n = false
             }
+          }
+        }
+        break;
+      case 101: //Favorite From Favorite
+        for (i = 0; i < (this.state.tasks.length); i++) {
+          if (this.state.tasks[i].taskId === taskId) {
+            temporal = this.state.tasks.slice()
+            temporal[i].favorite = favorite
+            this.setState({ tasks: temporal })
+          }
+        }
+        for (i = 0; i < (this.state.favoriteTasks.length); i++) {
+          if (this.state.favoriteTasks[i].taskId === taskId) {
+            this.setState(this.state.favoriteTasks.splice(i, 1))
+            this.setState(prevState => ({ favoriteCount: prevState.favoriteCount - 1 }))
           }
         }
         break;
@@ -113,7 +120,8 @@ class ToDoApp extends Component {
                   taskName: taskName,
                   taskDate: taskDate,
                   favorite: false,
-                  taskId: taskId
+                  taskId: taskId,
+                  type: type,
                 })
             }))
             this.setState(this.state.tasks.splice(i, 1))
@@ -128,6 +136,7 @@ class ToDoApp extends Component {
         for (i = 0; i < (this.state.favoriteTasks.length); i++) {
           if (this.state.favoriteTasks[i].taskId === taskId) {
             this.setState(this.state.favoriteTasks.splice(i, 1))
+            this.setState(prevState => ({favoriteCount: prevState.favoriteCount-1}))
           }
         }
         break;
@@ -139,8 +148,9 @@ class ToDoApp extends Component {
             temporal[i].taskDate = taskDate
             temporal[i].taskId = taskId
             temporal[i].favorite = favorite
+            temporal[i].type = type
             this.setState({ tasks: temporal })
-          }if(temporal[i].favorite === true){
+          } if (temporal[i].favorite === true) {
             for (i = 0; i < (this.state.favoriteTasks.length); i++) {
               if (this.state.favoriteTasks[i].taskId === taskId) {
                 temporal = this.state.favoriteTasks.slice()
@@ -148,9 +158,12 @@ class ToDoApp extends Component {
                 temporal[i].taskDate = taskDate
                 temporal[i].taskId = taskId
                 temporal[i].favorite = favorite
+                temporal[i].type = type
                 this.setState({ favoriteTasks: temporal })
+              }
+            }
           }
-        }}}
+        }
         break;
       case 400: //Delete
         for (i = 0; i < (this.state.tasks.length); i++) {
@@ -172,13 +185,13 @@ class ToDoApp extends Component {
           }
         };
         break;
+      case 500: //Open add dialog
+        this.setState({ openDialog: true });
+        break;
       default:
         break;
     }
   }
-  openDialog = () => {
-    this.setState({ openDialog: true });
-  };
   closeDialog = () => {
     this.setState({ openDialog: false });
   };
@@ -191,16 +204,38 @@ class ToDoApp extends Component {
     const { classes } = this.props;
     return (
       <div className="App">
-        <header className="App-header">
-        {this.props.viewToDo ?  <h2>Tasks to do: {this.state.unfinishedTasks}</h2>: null}
-        {this.props.viewCompleted ? <h2>Tasks completed: {this.state.completeTaskCount}</h2> : null}
-        {this.props.viewFavorite ?  <h2>Favorite tasks: {this.state.favoriteCount}</h2>: null}
-        </header>
         <div className={classes.app}>
           <Grid container>
-            {this.props.viewToDo ? <ToDoList normalTask={true} completedTask={false} tasks={this.state.tasks} onClick={this.actionTask} /> : null}
-            {this.props.viewCompleted ? <ToDoList normalTask={false} completedTask={true} tasks={this.state.completedTasks} onClick={this.actionTask} /> : null}
-            {this.props.viewFavorite ? <ToDoList normalTask={true} completedTask={false} tasks={this.state.favoriteTasks} onClick={this.actionTask} /> : null}
+            <Grid item xs={3}>
+              <Paper>
+                <Grid container>
+                  <Grid item xs={4}>
+                    <Tooltip id="tooltip-bottom" title="Completed Tasks" placement="bottom">
+                      <Badge className={classes.badge} badgeContent={this.state.completeTaskCount} color="accent">
+                        <DoneIcon className={classes.icon} color='primary'/>
+                      </Badge>
+                    </Tooltip>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Tooltip id="tooltip-bottom" title="To Do Tasks" placement="bottom">
+                      <Badge className={classes.badge} badgeContent={this.state.unfinishedTasks} color="accent">
+                        <CreateIcon className={classes.icon} color='primary'/>
+                      </Badge>
+                    </Tooltip>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Tooltip id="tooltip-bottom" title="Favorite Tasks" placement="bottom">
+                      <Badge className={classes.badge} badgeContent={this.state.favoriteCount} color="accent">
+                        <FavoriteIcon className={classes.icon} color='primary'/>
+                      </Badge>
+                    </Tooltip>
+                  </Grid>
+                </Grid>
+              </Paper>
+            </Grid>
+            <Route exact path="/" render={(...props) => <ToDoTasksList {...props} normalTask={true} completedTask={false} tasks={this.state.tasks} onClick={this.actionTask} />} />
+            <Route path="/completed" render={(...props) => <CompletedTasksList {...props} normalTask={false} completedTask={true} tasks={this.state.completedTasks} />} />
+            <Route path="/favorite" render={(...props) => <FavoriteTasksList {...props} normalTask={true} completedTask={false} tasks={this.state.favoriteTasks} onClick={this.actionTask} />} />
           </Grid>
         </div>
         <Snackbar
@@ -211,11 +246,6 @@ class ToDoApp extends Component {
           onRequestClose={this.closeSnack}
           className={classes.snackBar}
         />
-        {this.props.viewToDo ?
-          <Button fab className={classes.button} color='primary' onClick={this.openDialog}>
-            <AddIcon />
-          </Button>
-          : null}
         <AddTask open={this.state.openDialog}
           onClick={this.closeDialog}
           onSubmit={this.addNewTask} />
