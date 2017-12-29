@@ -41,38 +41,61 @@ const styles = theme => ({
 class Task extends Component {
     state = {
         openDialog: false,
-        anchorOrigin: {
-            horizontal: 'left',
-            vertical: 'bottom',
-        },
-        targetOrigin: {
-            horizontal: 'left',
-            vertical: 'top',
-        },
     };
-    handleClickFavorite = (event) => {
+    favoriteTask = (event) => {
         event.preventDefault();
-        this.props.onClick(this.props.taskId, 100, this.props.taskName, this.props.taskDate, true, this.props.type);
+        let changeTask = {
+            taskName: this.props.taskName,
+            taskId: this.props.taskId,
+            taskDate: this.props.taskDate,
+            favorite: true,
+            type: this.props.type
+        }
+        this.props.onClick(changeTask, 100)
     }
-    handleClickUnfavorite = (event) => {
+    unfavoriteTask = (event) => {
         event.preventDefault();
-        this.props.onClick(this.props.taskId, 100, this.props.taskName, this.props.taskDate, false, this.props.type);
+        let changeTask = {
+            taskName: this.props.taskName,
+            taskId: this.props.taskId,
+            taskDate: this.props.taskDate,
+            favorite: false,
+            type: this.props.type
+        }
+        this.props.onClick(changeTask, 100)
     }
-    handleClickDone = (event) => {
+    completeTask = (event) => {
         event.preventDefault();
-        this.props.onClick(this.props.taskId, 200, this.props.taskName, this.props.taskDate, false, this.props.type);
+        let changeTask = {
+            taskName: this.props.taskName,
+            taskId: this.props.taskId,
+            taskDate: this.props.taskDate,
+            favorite: this.props.favorite,
+            type: this.props.type
+        }
+        this.props.onClick(changeTask, 200)
     }
-    handleClickEditTask = (taskDate, taskName, type) => {
-        this.props.onClick(this.props.taskId, 300, taskDate, taskName, this.props.favorite, type);
+    editTask = (taskName, taskDate, type) => {
+        let changeTask = {
+            taskName: taskName,
+            taskId: this.props.taskId,
+            taskDate: taskDate,
+            favorite: this.props.favorite,
+            type: type
+        }
+        this.props.onClick(changeTask, 300)
     }
-    handleClickDelete = (event) => {
+    deleteTask = (event) => {
         event.preventDefault();
-        this.props.onClick(this.props.taskId, 400);
-    }
-    handleClickOpenDialog = () => {
+        let changeTask = {
+            taskId: this.props.taskId,
+        }
+        this.props.onClick(changeTask, 400);
+    };
+    openDialog = () => {
         this.setState({ openDialog: true });
     };
-    handleClickCloseDialog = () => {
+    closeDialog = () => {
         this.setState({ openDialog: false });
     };
     render() {
@@ -80,7 +103,7 @@ class Task extends Component {
         return (
             <div>
                 <Tooltip id="tooltip-bottom" title="Click to Edit" placement="bottom">
-                    <ListItem className={classes.root} onClick={this.handleClickOpenDialog}>
+                    <ListItem className={classes.root} onClick={this.openDialog}>
                         <Tooltip id="tooltip-bottom" title={this.props.type} placement="bottom">
                             <ListItemAvatar color='primary'>
                                 <Avatar className={classes.colorDefault}>
@@ -98,26 +121,25 @@ class Task extends Component {
                         />
                         <ListItemSecondaryAction>
                             <Tooltip id="tooltip-bottom" title="Complete" placement="bottom">
-                                <IconButton aria-label="done" color='primary' type="button" onClick={this.handleClickDone}>
+                                <IconButton aria-label="done" color='primary' type="button" onClick={this.completeTask}>
                                     <DoneIcon />
                                 </IconButton>
                             </Tooltip>
                             {this.props.favorite ?
                                 <Tooltip id="tooltip-bottom" title="Unfavorite" placement="bottom">
-                                    <IconButton aria-label="Unfavorite" color='primary' type="button" onClick={this.handleClickUnfavorite}>
+                                    <IconButton aria-label="Unfavorite" color='primary' type="button" onClick={this.unfavoriteTask}>
                                         <FavoriteIcon />
                                     </IconButton>
                                 </Tooltip>
-                                : null}
-                            {!this.props.favorite ?
+                                :
                                 <Tooltip id="tooltip-bottom" title="Favorite" placement="bottom">
-                                    <IconButton aria-label="favorite" color='primary' type="button" onClick={this.handleClickFavorite}>
+                                    <IconButton aria-label="favorite" color='primary' type="button" onClick={this.favoriteTask}>
                                         <FavoriteBorderIcon />
                                     </IconButton>
                                 </Tooltip>
-                                : null}
+                                }
                             <Tooltip id="tooltip-bottom" title="Delete" placement="bottom">
-                                <IconButton aria-label="delete" color='primary' type="button" onClick={this.handleClickDelete}>
+                                <IconButton aria-label="delete" color='primary' type="button" onClick={this.deleteTask}>
                                     <DeleteIcon />
                                 </IconButton>
                             </Tooltip>
@@ -125,11 +147,12 @@ class Task extends Component {
                     </ListItem>
                 </Tooltip>
                 <EditTask open={this.state.openDialog}
-                    onClick={this.handleClickCloseDialog}
-                    onSubmit={this.handleClickEditTask}
+                    onClick={this.closeDialog}
+                    onSubmit={this.editTask}
                     taskName={this.props.taskName}
                     taskDate={this.props.taskDate}
-                    type={this.props.type} />
+                    type={this.props.type}
+                    />
             </div>
         );
     }

@@ -59,51 +59,55 @@ class ToDoApp extends Component {
       unfinishedTasks: prevState.unfinishedTasks + 1
     }));
   }
-  actionTask = (taskId, statusCode, taskName, taskDate, favorite, type) => {
+  actionTask = (Task, statusCode) => {
     var i, temporal, n
     switch (statusCode) {
       case 100: //Favorite From To Do
         for (i = 0; i < (this.state.tasks.length); i++) {
-          if (this.state.tasks[i].taskId === taskId) {
+          debugger;
+          if (this.state.tasks[i].taskId === Task.taskId) {
             temporal = this.state.tasks.slice()
-            temporal[i].favorite = favorite
+            temporal[i].favorite = Task.favorite
             this.setState({ tasks: temporal })
             n = true
+            debugger;
           }
         }
-        if (n === true && favorite === true) {
+        if (n && Task.favorite) {
           this.setState(prevState => ({
             favoriteCount: prevState.favoriteCount + 1,
             favoriteTasks: prevState.favoriteTasks.concat(
               {
-                taskName: taskName,
-                taskDate: taskDate,
-                favorite: favorite,
-                taskId: taskId,
-                type: type,
+                taskName: Task.taskName,
+                taskDate: Task.taskDate,
+                favorite: Task.favorite,
+                taskId: Task.taskId,
+                type: Task.type,
               })
           }))
           n = false
-        } else if (favorite === false && n === true) {
+          debugger;
+        } else if (!Task.favorite && n) {
           for (i = 0; i < (this.state.favoriteTasks.length); i++) {
-            if (this.state.favoriteTasks[i].taskId === taskId) {
+            if (this.state.favoriteTasks[i].taskId === Task.taskId) {
               this.setState(this.state.favoriteTasks.splice(i, 1))
               this.setState(prevState => ({ favoriteCount: prevState.favoriteCount - 1 }))
               n = false
+              debugger;
             }
           }
         }
         break;
       case 101: //Favorite From Favorite
         for (i = 0; i < (this.state.tasks.length); i++) {
-          if (this.state.tasks[i].taskId === taskId) {
+          if (this.state.tasks[i].taskId === Task.taskId) {
             temporal = this.state.tasks.slice()
-            temporal[i].favorite = favorite
+            temporal[i].favorite = Task.favorite
             this.setState({ tasks: temporal })
           }
         }
         for (i = 0; i < (this.state.favoriteTasks.length); i++) {
-          if (this.state.favoriteTasks[i].taskId === taskId) {
+          if (this.state.favoriteTasks[i].taskId === Task.taskId) {
             this.setState(this.state.favoriteTasks.splice(i, 1))
             this.setState(prevState => ({ favoriteCount: prevState.favoriteCount - 1 }))
           }
@@ -111,17 +115,16 @@ class ToDoApp extends Component {
         break;
       case 200: //Done
         var today = new Date();
-        taskDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+        Task.taskDate = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
         for (i = 0; i < (this.state.tasks.length); i++) {
-          if (this.state.tasks[i].taskId === taskId) {
+          if (this.state.tasks[i].taskId === Task.taskId) {
             this.setState(prevState => ({
-              completedTasks: prevState.completedTasks.concat(
-                {
-                  taskName: taskName,
-                  taskDate: taskDate,
+              completedTasks: prevState.completedTasks.concat({ 
+                  taskName: Task.taskName,
+                  taskDate: Task.taskDate,
                   favorite: false,
-                  taskId: taskId,
-                  type: type,
+                  taskId: Task.taskId,
+                  type: Task.type,
                 })
             }))
             this.setState(this.state.tasks.splice(i, 1))
@@ -134,7 +137,7 @@ class ToDoApp extends Component {
           }
         }
         for (i = 0; i < (this.state.favoriteTasks.length); i++) {
-          if (this.state.favoriteTasks[i].taskId === taskId) {
+          if (this.state.favoriteTasks[i].taskId === Task.taskId) {
             this.setState(this.state.favoriteTasks.splice(i, 1))
             this.setState(prevState => ({favoriteCount: prevState.favoriteCount-1}))
           }
@@ -142,32 +145,24 @@ class ToDoApp extends Component {
         break;
       case 300: //Edit
         for (i = 0; i < (this.state.tasks.length); i++) {
-          if (this.state.tasks[i].taskId === taskId) {
+          if (this.state.tasks[i].taskId === Task.taskId) {
             temporal = this.state.tasks.slice()
-            temporal[i].taskName = taskName
-            temporal[i].taskDate = taskDate
-            temporal[i].taskId = taskId
-            temporal[i].favorite = favorite
-            temporal[i].type = type
+            temporal[i] = Task
             this.setState({ tasks: temporal })
-          } if (temporal[i].favorite === true) {
+          if (temporal[i].favorite) {
             for (i = 0; i < (this.state.favoriteTasks.length); i++) {
-              if (this.state.favoriteTasks[i].taskId === taskId) {
+              if (this.state.favoriteTasks[i].taskId === Task.taskId) {
                 temporal = this.state.favoriteTasks.slice()
-                temporal[i].taskName = taskName
-                temporal[i].taskDate = taskDate
-                temporal[i].taskId = taskId
-                temporal[i].favorite = favorite
-                temporal[i].type = type
+                temporal[i] = Task
                 this.setState({ favoriteTasks: temporal })
               }
             }
           }
-        }
+        }}
         break;
       case 400: //Delete
         for (i = 0; i < (this.state.tasks.length); i++) {
-          if (this.state.tasks[i].taskId === taskId) {
+          if (this.state.tasks[i].taskId === Task.taskId) {
             this.setState(this.state.tasks.splice(i, 1))
             this.setState(prevState => ({
               snackBarMessage: 'Task deleted',
@@ -177,7 +172,7 @@ class ToDoApp extends Component {
           }
         };
         for (i = 0; i < (this.state.favoriteTasks.length); i++) {
-          if (this.state.favoriteTasks[i].taskId === taskId) {
+          if (this.state.favoriteTasks[i].taskId === Task.taskId) {
             this.setState(this.state.favoriteTasks.splice(i, 1))
             this.setState(prevState => ({
               favoriteCount: prevState.favoriteCount - 1
@@ -233,9 +228,9 @@ class ToDoApp extends Component {
                 </Grid>
               </Paper>
             </Grid>
-            <Route exact path="/" render={(...props) => <ToDoTasksList {...props} normalTask={true} completedTask={false} tasks={this.state.tasks} onClick={this.actionTask} />} />
-            <Route path="/completed" render={(...props) => <CompletedTasksList {...props} normalTask={false} completedTask={true} tasks={this.state.completedTasks} />} />
-            <Route path="/favorite" render={(...props) => <FavoriteTasksList {...props} normalTask={true} completedTask={false} tasks={this.state.favoriteTasks} onClick={this.actionTask} />} />
+            <Route exact path="/" render={(...props) => <ToDoTasksList {...props} tasks={this.state.tasks} onClick={this.actionTask} />} />
+            <Route path="/completed" render={(...props) => <CompletedTasksList {...props} tasks={this.state.completedTasks} />} />
+            <Route path="/favorite" render={(...props) => <FavoriteTasksList {...props} tasks={this.state.favoriteTasks} onClick={this.actionTask} />} />
           </Grid>
         </div>
         <Snackbar

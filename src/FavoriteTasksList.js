@@ -15,10 +15,7 @@ const styles = theme => ({
     },
 });
 
-const ToDoTasksList = (props) => {
-    this.openDialog = () => {
-        props.onClick(null, 500);
-    };
+const FavoriteTasksList = (props) => {
     const { classes } = props;
     return (
         <div className={classes.container}>
@@ -38,7 +35,7 @@ const ToDoTasksList = (props) => {
         </div>
     );
 }
-ToDoTasksList.propTypes = {
+FavoriteTasksList.propTypes = {
     classes: PropTypes.object.isRequired,
 };
-export default withStyles(styles)(ToDoTasksList);
+export default withStyles(styles)(FavoriteTasksList);

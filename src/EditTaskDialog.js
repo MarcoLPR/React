@@ -25,6 +25,8 @@ const styles = theme => ({
     },
     field: {
         width: '70%',
+        marginRight: 8,
+        marginBottom: 20,
     },
 });
 
