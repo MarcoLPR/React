@@ -32,7 +32,7 @@ const ToDoTasksList = (props) => {
         <div className={classes.container}>
         <Grid item xs={9}>
                 <List>
-                    {props.tasks.map(task =>
+                    {props.tasks ? props.tasks.map(task =>
                         <Task
                             taskName={task.taskName}
                             taskId={task.taskId}
@@ -40,7 +40,7 @@ const ToDoTasksList = (props) => {
                             favorite={task.favorite}
                             onClick={props.onClick}
                             type={task.type}
-                        />)}
+                        />):null}
                 </List>
         </Grid>
             <Button fab className={classes.button} color='primary' onClick={this.openDialog}>

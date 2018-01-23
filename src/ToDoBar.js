@@ -16,6 +16,9 @@ import Drawer from 'material-ui/Drawer';
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 import ChevronLeftIcon from 'material-ui-icons/ChevronLeft';
+import Avatar from 'material-ui/Avatar';
+//Components
+import Login from './Login';
 
 const styles = {
     root: {
@@ -52,12 +55,16 @@ class ToDoBar extends Component {
             <div className={classes.root}>
                 <AppBar position="static" color='primary'>
                     <Toolbar>
+                        {this.props.logged ?
                         <IconButton className={classes.menuButton} color="contrast" aria-label="Menu" onClick={this.toggleDrawer(true)}>
                             <MenuIcon />
                         </IconButton>
+                        : null}
                         <Typography type="title" color="inherit" className={classes.flex}>
                             {this.state.title}
                         </Typography>
+                        <Avatar src={this.props.photoURL} />
+                        <Login logged={this.props.logged} onClick={this.props.onClick} />
                     </Toolbar>
                 </AppBar>
                 <Drawer open={this.state.openDrawer} onClose={this.toggleDrawer(false)}>

@@ -17,6 +17,8 @@ import ToDoTasksList from './ToDoTasksList.js';
 import CompletedTasksList from './CompletedTasksList.js';
 import FavoriteTasksList from './FavoriteTasksList.js';
 import AddTask from './AddTaskDialog.js';
+import Typography from 'material-ui/Typography';
+import * as firebase from 'firebase';
 
 const styles = theme => ({
   app: {
@@ -30,6 +32,7 @@ const styles = theme => ({
   }
 });
 
+//Guardar contadores en Firebase y leer datos para poblar arreglos
 class ToDoApp extends Component {
   state = {
     tasks: [],
@@ -42,8 +45,14 @@ class ToDoApp extends Component {
     openSnackBar: false,
     snackBarMessage: '',
   };
+  componentWillReceiveProps(nextProps) {
+      this.setState({ tasks: nextProps.tasksInfo.activeTasks });
+    }
 
   addNewTask = (taskName, taskDate, type) => {
+    if(!this.state.tasks){
+      this.setState({tasks: []})
+    }
     this.setState(prevState => ({
       tasks: prevState.tasks.concat(
         {
@@ -56,21 +65,33 @@ class ToDoApp extends Component {
       taskCount: prevState.taskCount + 1,
       snackBarMessage: 'Task added',
       openSnackBar: true,
-      unfinishedTasks: prevState.unfinishedTasks + 1
+      unfinishedTasks: prevState.unfinishedTasks + 1,
     }));
+        var id = this.state.taskCount + 1;
+        firebase.database().ref('users/' + this.props.user.username + '/active/' + id).set({
+          taskName: taskName,
+          taskDate: taskDate,
+          favorite: false,
+          taskId: id,
+          type: type
+        })
+        firebase.database().ref('users/' + this.props.user.username + '/').update({
+          taskCount: id 
+        });
   }
   actionTask = (Task, statusCode) => {
     var i, temporal, n
     switch (statusCode) {
       case 100: //Favorite From To Do
         for (i = 0; i < (this.state.tasks.length); i++) {
-          debugger;
           if (this.state.tasks[i].taskId === Task.taskId) {
             temporal = this.state.tasks.slice()
             temporal[i].favorite = Task.favorite
             this.setState({ tasks: temporal })
             n = true
-            debugger;
+            firebase.database().ref('users/' + this.props.user.username + '/active/' + Task.taskId).update({
+              favorite: temporal[i].favorite,
+            })
           }
         }
         if (n && Task.favorite) {
@@ -85,15 +106,21 @@ class ToDoApp extends Component {
                 type: Task.type,
               })
           }))
+          firebase.database().ref('users/' + this.props.user.username + '/favorite/' + Task.taskId).set({
+            taskName: Task.taskName,
+            taskDate: Task.taskDate,
+            favorite: true,
+            taskId: Task.taskId,
+            type: Task.type
+          })
           n = false
-          debugger;
         } else if (!Task.favorite && n) {
           for (i = 0; i < (this.state.favoriteTasks.length); i++) {
             if (this.state.favoriteTasks[i].taskId === Task.taskId) {
               this.setState(this.state.favoriteTasks.splice(i, 1))
               this.setState(prevState => ({ favoriteCount: prevState.favoriteCount - 1 }))
+              firebase.database().ref('users/' + this.props.user.username + '/favorite/' + Task.taskId).remove()
               n = false
-              debugger;
             }
           }
         }
@@ -134,6 +161,14 @@ class ToDoApp extends Component {
               openSnackBar: true,
               unfinishedTasks: prevState.unfinishedTasks - 1
             }))
+            firebase.database().ref('users/' + this.props.user.username + '/completed/' + Task.taskId + '/').set({
+              taskName: Task.taskName,
+              taskDate: Task.taskDate,
+              favorite: false,
+              taskId: Task.taskId,  
+              type: Task.type
+            })
+            firebase.database().ref('users/' + this.props.user.username + '/active/' + Task.taskId + '/').remove()
           }
         }
         for (i = 0; i < (this.state.favoriteTasks.length); i++) {
@@ -149,16 +184,29 @@ class ToDoApp extends Component {
             temporal = this.state.tasks.slice()
             temporal[i] = Task
             this.setState({ tasks: temporal })
+            firebase.database().ref('users/' + this.props.user.username + '/active/' + Task.taskId).set({
+              taskName: Task.taskName,
+              taskDate: Task.taskDate,
+              favorite: Task.favorite,
+              taskId: Task.taskId,
+              type: Task.type
+            })
           if (temporal[i].favorite) {
             for (i = 0; i < (this.state.favoriteTasks.length); i++) {
               if (this.state.favoriteTasks[i].taskId === Task.taskId) {
                 temporal = this.state.favoriteTasks.slice()
                 temporal[i] = Task
                 this.setState({ favoriteTasks: temporal })
-              }
+                firebase.database().ref('users/' + this.props.user.username + '/favorite/' + Task.taskId).set({
+                  taskName: Task.taskName,
+                  taskDate: Task.taskDate,
+                  favorite: Task.favorite,
+                  taskId: Task.taskId,
+                  type: Task.type
+              })
             }
           }
-        }}
+        }}}
         break;
       case 400: //Delete
         for (i = 0; i < (this.state.tasks.length); i++) {
@@ -169,6 +217,7 @@ class ToDoApp extends Component {
               openSnackBar: true,
               unfinishedTasks: prevState.unfinishedTasks - 1
             }))
+            firebase.database().ref('users/' + this.props.user.username + '/active/' + Task.taskId).remove()
           }
         };
         for (i = 0; i < (this.state.favoriteTasks.length); i++) {
@@ -177,6 +226,7 @@ class ToDoApp extends Component {
             this.setState(prevState => ({
               favoriteCount: prevState.favoriteCount - 1
             }))
+            firebase.database().ref('users/' + this.props.user.username + '/favorite/' + Task.taskId).remove()
           }
         };
         break;
@@ -200,10 +250,14 @@ class ToDoApp extends Component {
     return (
       <div className="App">
         <div className={classes.app}>
+          {this.props.logged ?
           <Grid container>
             <Grid item xs={3}>
               <Paper>
                 <Grid container>
+                  <Grid item xs={12}>
+                    <Typography>Your stats, {this.props.user.username}</Typography>
+                  </Grid>
                   <Grid item xs={4}>
                     <Tooltip id="tooltip-bottom" title="Completed Tasks" placement="bottom">
                       <Badge className={classes.badge} badgeContent={this.state.completeTaskCount} color="accent">
@@ -232,6 +286,8 @@ class ToDoApp extends Component {
             <Route path="/completed" render={(...props) => <CompletedTasksList {...props} tasks={this.state.completedTasks} />} />
             <Route path="/favorite" render={(...props) => <FavoriteTasksList {...props} tasks={this.state.favoriteTasks} onClick={this.actionTask} />} />
           </Grid>
+            : null
+            }
         </div>
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
